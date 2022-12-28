@@ -2,6 +2,7 @@
 #include<stdio.h>
 #include<getopt.h>
 #include<string.h>
+#include <stdbool.h>
 
 
 
@@ -26,11 +27,16 @@ struct process *createProcess( int, int, int);
 struct process *insertBack(struct process *, int, int, int);
 struct process *deleteFront(struct process *);
 void display(struct process *header);
+void schedulingMethod (int );
+void showOutput(void );
 
 //__________________________Variables____________________________
 
 char* input , output ;
 double average =0 ;
+int quantum ; 
+bool preemptive = 0 ; 
+bool sjf , fcfs , pr , rr ;
 
 
 
@@ -59,7 +65,7 @@ int main (int args , char* argv[]){
   
          FILE *file = fopen(input,"r");
   
-	      if (feof(file))
+	      /*if (feof(file))
 	       {
 		       printf("\nyour input file is empty!!!");
 		       exit(1);
@@ -74,8 +80,40 @@ int main (int args , char* argv[]){
 			       counter++;
 		        }
 	       }
-
+*/
          fclose(file);
+
+
+         
+		printf("1)Scheduling Method(none) \n2)Preemptive Mode(OFF/ON)\n3)showResult\n4)End Program \n ");
+		int choice ;
+		scanf("%1d", &choice);
+
+        switch (choice)
+		{
+		case 1 :
+		      int mode; 
+			  printf("1)none \n2)first come first serve \n3)shortest job first\n4)priority scheduling\n5)Round Robin\n");
+			  scanf("%1d" , &mode);
+			  schedulingMethod (mode);
+			break;
+
+		case 2 :
+			  preemptive = true;
+			break;
+
+		case 3 :
+			  //call a function
+			break;
+
+		case 4 :
+			 showOutput();
+			break;
+
+		default:
+		  printf("wrong choice!!!!");
+			break;
+		}		 
 
     
 
@@ -131,7 +169,7 @@ struct process *insertBack(struct process *header, int burst , int arrival, int 
 	return header;
 }
 
-//______________________________delete_______________________________
+//_____________________________delete_______________________________
 
 
 struct process *deleteFront(struct process *header)
@@ -149,7 +187,7 @@ struct process *deleteFront(struct process *header)
 	return header;
 }
 
-//___________________________Display______________________________________
+//___________________________Display____________________________________
 
 void display(struct process *header)
 {
@@ -163,3 +201,40 @@ void display(struct process *header)
 	}
 
 }
+
+//_______________________Scheduling Method______________________________
+
+void schedulingMethod (int m){
+
+
+switch (m)
+{
+    case 1:  
+	break;
+
+	case 2 :  
+	break;
+
+	case 3 :  
+	break;
+
+	case 4 :  
+	break;
+
+    default:
+	printf("ops !!! wrong choice ! ");
+	break;
+}
+
+}
+
+//________________________show output____________________________________
+
+void showOutput(){
+
+
+
+
+}
+
+//________________________________________________________________________________
