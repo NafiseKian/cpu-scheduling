@@ -38,6 +38,8 @@ int quantum ;
 bool preemptive = 0 ; 
 bool sjf , fcfs , pr , rr ;
 
+//just checkiiiiiiiiing 
+
 
 
 //__________________________Main_Function_________________________
