@@ -3,6 +3,7 @@
 #include<getopt.h>
 #include<string.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 
 
@@ -14,11 +15,6 @@ int bt;  // burst time
 int pr;  //priority
 int tt ; //turnaround time
 int wt ; //waiting time
-bool fcfs;
-bool sjf  ;
-bool priority;
-bool roundrobin;
- 
 
 struct process* next ;
 
@@ -30,9 +26,11 @@ struct process* next ;
 struct process *createProcess( int, int, int);
 struct process *insertBack(struct process *, int, int, int);
 struct process *deleteFront(struct process *);
+struct process *swap (struct process * , struct process *);
+struct process *copy(struct process *);
 void display(struct process *header);
 void schedulingMethod (int );
-void fcfsScheduling();
+void fcfsScheduling(struct process *);
 void sjfScheduling ();
 void priorityScheduling();
 void roundrobinScheduling();
@@ -40,10 +38,16 @@ void showOutput(struct process*);
 
 //__________________________Variables____________________________
 
-char* input , output ;
+char* input  ;
+char* output  ;
 double average =0 ;
 int quantum ; 
 bool preemptive = 0 ; 
+struct process *header =NULL;
+bool fcfs;
+bool sjf  ;
+bool priority;
+bool roundrobin;
 
 
 //__________________________Main_Function_________________________
@@ -53,7 +57,6 @@ int main (int args , char* argv[]){
 
      
      int opt;
-	 struct process *header ;
      int counter = 0;
 
      while((opt = getopt(args , argv , "f:o:")) != -1 )
@@ -81,7 +84,7 @@ int main (int args , char* argv[]){
 		       while (!feof(file)) 
 		        {
 			       int arrival, burst, priority;
-			       fscanf(input, "%d:%d:%d\n", &arrival, &burst, &priority);
+			       fscanf(file, "%d:%d:%d\n", &arrival, &burst, &priority);
                    header = insertBack(header , arrival , burst , priority);
 			       counter++;
 		        }
@@ -89,7 +92,7 @@ int main (int args , char* argv[]){
 
          fclose(file);
 
-
+        
          
 		printf("1)Scheduling Method(none) \n2)Preemptive Mode(OFF/ON)\n3)showResult\n4)End Program \n type:");
 		int choice ;
@@ -172,6 +175,7 @@ struct process *insertBack(struct process *header, int burst , int arrival, int 
 		ht = ht->next;
 
 	ht->next = temp;
+	
 	return header;
 }
 
@@ -193,18 +197,56 @@ struct process *deleteFront(struct process *header)
 	return header;
 }
 
+//____________________________swap______________________________
+
+struct process *swap (struct process *h1 , struct process *h2){
+
+while (h1->next != h2)
+    h1=h1->next;
+
+struct process *t = h2->next->next;
+h1->next = h2->next ;
+h2->next = t;
+h1->next->next=h2;
+
+printf("im done");
+return h1;
+
+}
+
+//___________________________Copy______________________________________
+
+struct process *copy(struct process *h){
+
+   struct process *t = h ;
+   struct process *cp ;
+
+   while (t->next!= NULL)
+   {
+	int a = t->at;
+	int b = t->bt;
+	int c = t->pr;
+	
+	cp = insertBack(cp ,  a , b ,c );
+	t=t->next;
+   }
+   
+ return cp ; 
+}
+
 //___________________________Display____________________________________
 
-void display(struct process *header)
+void display(struct process *h)
 {
-	struct process *temp = header;
-	while (temp != NULL)
-	{
-		printf("details : %d %d %d %d \n" , temp->at , temp->bt , temp->pr , temp->tt);
+	struct process *temp = h ;
 
-	
-		temp = temp->next;
-	}
+while (temp != NULL)
+{
+	printf("%d \n %d \n %d" ,temp->at , temp->bt, temp->wt );
+	temp=temp->next;
+}
+
+
 
 }
 
@@ -219,7 +261,7 @@ switch (m)
 	break;
 
 	case 2 :  
-	   fcfsScheduling();
+	   fcfsScheduling(header);
 	break;
 
 	case 3 :
@@ -246,7 +288,25 @@ switch (m)
 
 //___________________________fcfs_______________________________________
 
-void fcfsScheduling(){
+void fcfsScheduling(struct process *h){
+
+struct process *f ;
+
+f = copy(h);
+
+
+while (f->next!= NULL)
+{
+	if (f->at >= f->next->at )
+	swap (h , f->next->next);
+
+    f=f->next ; 
+
+}
+
+
+
+
 
 
 
@@ -279,16 +339,15 @@ void roundrobinScheduling(){
 
 void showOutput(struct process *h){
 
-struct process *temp = h ;
-
-while (temp != NULL)
-{
-	printf("%d \n %d \n %d" ,temp->at , temp->bt, temp->wt );
-	temp=temp->next;
-}
 
 
 
+    FILE *f = fopen(output, "w");
+    fprintf(f , "working ! ");
+	fclose(f);
+
+
+    exit(0);
 
 }
 
