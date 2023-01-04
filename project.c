@@ -30,7 +30,7 @@ struct process *swap (struct process * , struct process *);
 struct process *copy(struct process *);
 void display(struct process *header);
 void schedulingMethod (int );
-void fcfsScheduling(struct process *);
+void fcfsScheduling();
 void sjfScheduling ();
 void priorityScheduling();
 void roundrobinScheduling();
@@ -48,6 +48,7 @@ bool fcfs;
 bool sjf  ;
 bool priority;
 bool roundrobin;
+
 
 
 //__________________________Main_Function_________________________
@@ -157,29 +158,29 @@ struct process *createProcess( int arrival, int burst,  int priority)
 //_______________________________insert_________________________________
 
 
-struct process *insertBack(struct process *header, int burst , int arrival, int priority)
+struct process *insertBack(struct process *h, int burst , int arrival, int priority)
 {
 	struct process *temp = createProcess( burst, arrival, priority);
 	struct process *ht;
 
 	
-	if (header == NULL)
+	if (h == NULL)
 	{
-		header = temp;
-		return header;
+		h = temp;
+		return h;
 	}
 
-	ht = header;
+	ht = h;
 
 	while (ht->next != NULL) 
 		ht = ht->next;
 
 	ht->next = temp;
 	
-	return header;
+	return h;
 }
 
-//_____________________________delete_______________________________
+//_____________________________deleteFront_______________________________
 
 
 struct process *deleteFront(struct process *header)
@@ -197,41 +198,18 @@ struct process *deleteFront(struct process *header)
 	return header;
 }
 
-//____________________________swap______________________________
+//____________________________deleteAfter_______________________________
 
-struct process *swap (struct process *h1 , struct process *h2){
+void deleteAfter(struct process *afternode){
 
-while (h1->next != h2)
-    h1=h1->next;
+	struct process *t ;
 
-struct process *t = h2->next->next;
-h1->next = h2->next ;
-h2->next = t;
-h1->next->next=h2;
+	if(afternode->next == NULL || afternode == NULL)
+	  return;
 
-printf("im done");
-return h1;
-
-}
-
-//___________________________Copy______________________________________
-
-struct process *copy(struct process *h){
-
-   struct process *t = h ;
-   struct process *cp ;
-
-   while (t->next!= NULL)
-   {
-	int a = t->at;
-	int b = t->bt;
-	int c = t->pr;
-	
-	cp = insertBack(cp ,  a , b ,c );
-	t=t->next;
-   }
-   
- return cp ; 
+	t=afternode->next;
+	afternode->next=t->next;
+	free(t);
 }
 
 //___________________________Display____________________________________
@@ -242,7 +220,7 @@ void display(struct process *h)
 
 while (temp != NULL)
 {
-	printf("%d \n %d \n %d" ,temp->at , temp->bt, temp->wt );
+	printf("%d \n %d \n %d" ,temp->at , temp->bt, temp->pr );
 	temp=temp->next;
 }
 
@@ -261,7 +239,7 @@ switch (m)
 	break;
 
 	case 2 :  
-	   fcfsScheduling(header);
+	   fcfsScheduling();
 	break;
 
 	case 3 :
@@ -288,21 +266,32 @@ switch (m)
 
 //___________________________fcfs_______________________________________
 
-void fcfsScheduling(struct process *h){
+void fcfsScheduling(){
 
-struct process *f ;
+int timer = 0 ;
+int b , p ;
 
-f = copy(h);
+struct process *f = copy (header);
+struct process *fcfs ;
 
 
 while (f->next!= NULL)
 {
-	if (f->at >= f->next->at )
-	swap (h , f->next->next);
-
+	if ( timer <= f->at ){
+		timer = f->at;
+		b= f->bt ;
+		p= f->pr;
+	}
     f=f->next ; 
 
 }
+
+fcfs = createProcess (timer , b , p);
+
+//iterate again
+
+display (fcfs);
+
 
 
 
@@ -316,6 +305,19 @@ while (f->next!= NULL)
 
 void sjfScheduling (){
 
+if (preemptive==0){
+  
+
+
+
+
+}else{
+
+
+
+
+
+}
 
 }
 
@@ -323,12 +325,29 @@ void sjfScheduling (){
 
 void priorityScheduling(){
 
+if (preemptive==0){
+  
+
+
+  
+
+}else{
+
+
+
+
+
+}
+
 
 }
 
 //________________________round robin_____________________________
 
 void roundrobinScheduling(){
+
+printf("enter the time quamtum ");
+scanf("%1d" , &quantum);
 
 
 
@@ -348,6 +367,43 @@ void showOutput(struct process *h){
 
 
     exit(0);
+
+}
+
+//____________________________swap______________________________
+
+struct process *swap (struct process *h, struct process *afternode){
+
+while (h->next != afternode )
+    h= h->next ;
+
+struct process *t = afternode->next->next;
+h->next = afternode->next;
+afternode->next = t ;
+h->next->next = afternode ;
+
+return h ;
+
+}
+
+//___________________________Copy______________________________________
+
+struct process* copy(struct process *h){
+
+
+  if (h==NULL)
+    return h ;
+  else {
+
+   struct process *t= (struct process *)malloc(sizeof(struct process));
+   t->at = h->at ;
+   t->bt = h->bt ;
+   t->pr = h->pr ;
+
+
+   t->next = copy(h->next);
+   return t ;
+  }
 
 }
 
