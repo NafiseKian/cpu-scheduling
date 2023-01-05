@@ -26,7 +26,7 @@ struct process* next ;
 struct process *createProcess( int, int, int);
 struct process *insertBack(struct process *, int, int, int);
 struct process *deleteFront(struct process *);
-struct process *swap (struct process * , struct process *);
+void swapp (struct process * , struct process *);
 struct process *copy(struct process *);
 void display(struct process *header);
 void schedulingMethod (int );
@@ -40,6 +40,7 @@ void showOutput(struct process*);
 
 char* input  ;
 char* output  ;
+int counter = 0;
 double average =0 ;
 int quantum ; 
 bool preemptive = 0 ; 
@@ -58,8 +59,7 @@ int main (int args , char* argv[]){
 
      
      int opt;
-     int counter = 0;
-
+     
      while((opt = getopt(args , argv , "f:o:")) != -1 )
      {
 
@@ -113,7 +113,7 @@ int main (int args , char* argv[]){
 			break;
 
 		case 3 :
-			  //call a function
+		display(header);
 			break;
 
 		case 4 :
@@ -220,7 +220,7 @@ void display(struct process *h)
 
 while (temp != NULL)
 {
-	printf("%d \n %d \n %d" ,temp->at , temp->bt, temp->pr );
+	printf("%d  %d  %d \n" ,temp->at , temp->bt, temp->pr );
 	temp=temp->next;
 }
 
@@ -268,29 +268,26 @@ switch (m)
 
 void fcfsScheduling(){
 
-int timer = 0 ;
-int b , p ;
+
 
 struct process *f = copy (header);
-struct process *fcfs ;
+struct process *t1 =f;
 
-
-while (f->next!= NULL)
+while ( f->next != NULL)
 {
-	if ( timer <= f->at ){
-		timer = f->at;
-		b= f->bt ;
-		p= f->pr;
-	}
-    f=f->next ; 
+	if (f->at > f->next->at){
+     swapp (f , f->next);
 
+	}
+	  
+
+	 f=f->next; 
 }
 
-fcfs = createProcess (timer , b , p);
 
-//iterate again
 
-display (fcfs);
+
+display (t1);
 
 
 
@@ -372,17 +369,19 @@ void showOutput(struct process *h){
 
 //____________________________swap______________________________
 
-struct process *swap (struct process *h, struct process *afternode){
+void swapp (struct process *h, struct process *afternode){
 
-while (h->next != afternode )
-    h= h->next ;
+int a = h->at ;
+int b = h->bt ;
+int c = h->pr ;
 
-struct process *t = afternode->next->next;
-h->next = afternode->next;
-afternode->next = t ;
-h->next->next = afternode ;
+h->at = afternode->at ;
+h->bt = afternode->bt;
+h->pr= afternode->pr;
 
-return h ;
+afternode->at = a ;
+afternode->bt = b;
+afternode->pr = c; 
 
 }
 
