@@ -4,6 +4,7 @@
 #include<string.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <limits.h>
 
 
 
@@ -22,7 +23,7 @@ struct process* next ;
 //__________________________Functions____________________________
 
 
-
+void menu();
 struct process *createProcess( int, int, int);
 struct process *insertBack(struct process *, int, int, int);
 struct process *deleteFront(struct process *);
@@ -93,9 +94,16 @@ int main (int args , char* argv[]){
 
          fclose(file);
 
-        
-         
-		printf("1)Scheduling Method(none) \n2)Preemptive Mode(OFF/ON)\n3)showResult\n4)End Program \n type:");
+		 menu();
+
+    
+
+}
+ //___________________________menu_____________________________________
+
+        void menu(){
+
+			printf("\n1)Scheduling Method(none) \n2)Preemptive Mode(OFF/ON)\n3)showResult\n4)End Program \n type:");
 		int choice ;
 		scanf("%1d", &choice);
 
@@ -106,10 +114,12 @@ int main (int args , char* argv[]){
 			  printf("\n1)none \n2)first come first serve \n3)shortest job first\n4)priority scheduling\n5)Round Robin\ntype:");
 			  scanf("%1d" , &mode);
 			  schedulingMethod (mode);
+			  menu();
 			break;
 
 		case 2 :
 			  preemptive = true;
+			  menu();
 			break;
 
 		case 3 :
@@ -123,13 +133,12 @@ int main (int args , char* argv[]){
 		default:
 		  printf("wrong choice!!!!");
 			break;
-		}		 
-
-    
-
-}
+		}		
 
 
+
+		}
+         
 //_____________________________________________________________________
 
 
@@ -303,7 +312,6 @@ while (t1 != NULL)
 avg = sum / counter ;
 printf("average of fcfs : %f" , avg);
 
-
 //sendout(t2 , avg );
 
 
@@ -327,12 +335,13 @@ int timer = 0;
 double avg , sum ; 
 
 struct process *f = copy (header);
-struct process *t1 =f;
-struct process *t2 =f;
+struct process *t =f;
+struct process *tt =f;
+struct process *t11 =f;
 
 while ( f->next != NULL)
 {
-	if (f->bt > f->next->bt){
+	if (f->at > f->next->at){
      swapp (f , f->next);
 
 	}
@@ -342,48 +351,65 @@ while ( f->next != NULL)
 }
 
 
-while (t1 != NULL){
 
-   if (t1->at <= timer ){
-	 timer += t1->bt ;
-	 t1->tt = timer ;
-	 t1 = t1->next;
-   }else {
-	swapp ( t1 , t1->next);
-   if (t1->at <= timer ){
-      timer += t1->bt ;
-	  t1->tt = timer ;
-	  t1 = t1->next;
-   }else {
-	swapp ( t1 , t1->next);
-   if (t1->at <= timer ){
-      timer += t1->bt ;
-	  t1->tt = timer ;
-	  t1 = t1->next;
-   }
 
-}
+timer = 0;
 
-}
+for (int i=0 ; i<counter ; i++){
+
+ for (int j = 0; j < counter - 1 - i; j++){
+    
+	struct process *t1 =t;
+    struct process *t2 =t->next;
+
+
+	 if (t1->at <= timer && t2->at <= timer){
+            if (t1->bt > t2->bt)
+			{
+                swapp(t1 , t1->next);
+				printf("swapp happend for %d \n" , t1->at);
+				
+
+			}
+        timer += t1->bt ;
+	}else {
+		timer += t1->bt ;
+		
+	}
+   
+
+ }
+
+ t=t->next;
+
 }
 
 timer = 0;
-while (t2 != NULL)
+while (t11 != NULL)
 {
 
 
-	timer += t2->bt ;
-    t2->tt = timer ;
+	timer += t11->bt ;
+    t11->tt = timer ;
 	
 
-	t2->wt = (timer - t2->bt) - t2->at  ;
-	sum += t2->wt ;
-	t2=t2->next ;
+	t11->wt = (timer - t11->bt) - t11->at  ;
+	sum += t11->wt ;
+	t11=t11->next ;
 }
 
-avg = sum / counter ;
 
-printf("average of sjf : %f" , avg);
+
+avg = sum / counter ;
+printf(" time: %d ", timer);
+
+
+display(tt);
+
+
+
+
+printf("\naverage of sjf : %f" , avg);
 
 
 
@@ -406,6 +432,85 @@ void priorityScheduling(){
 
 if (preemptive==0){
   
+
+int timer = 0;
+
+double avg , sum ; 
+
+struct process *f = copy (header);
+struct process *t =f;
+struct process *tt =f;
+struct process *t11 =f;
+
+while ( f->next != NULL)
+{
+	if (f->at > f->next->at){
+     swapp (f , f->next);
+
+	}
+	  
+
+	 f=f->next; 
+}
+
+
+
+
+timer = 0;
+
+for (int i=0 ; i<counter ; i++){
+
+ for (int j = 0; j < counter - 1 - i; j++){
+    
+	struct process *t1 =t;
+    struct process *t2 =t->next;
+
+
+	 if (t1->at <= timer && t2->at <= timer){
+            if (t1->pr > t2->pr)
+			{
+                swapp(t1 , t1->next);
+				printf("swapp happend for %d \n" , t1->at);
+				
+
+			}
+        timer += t1->bt ;
+	}else {
+		timer += t1->bt ;
+		
+	}
+   
+
+ }
+
+ t=t->next;
+
+}
+
+timer = 0;
+while (t11 != NULL)
+{
+
+
+	timer += t11->bt ;
+    t11->tt = timer ;
+	
+
+	t11->wt = (timer - t11->bt) - t11->at  ;
+	sum += t11->wt ;
+	t11=t11->next ;
+}
+
+avg = sum / counter ;
+printf(" time: %d ", timer);
+
+
+display(tt);
+
+
+
+
+printf("\naverage of sjf : %f" , avg);
 
 
   
@@ -487,4 +592,3 @@ struct process* copy(struct process *h){
   }
 
 }
-
