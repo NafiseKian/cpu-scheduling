@@ -85,7 +85,7 @@ int main (int args , char* argv[]){
 		       while (!feof(file)) 
 		        {
 			       int arrival, burst, priority;
-			       fscanf(file, "%d:%d:%d\n", &arrival, &burst, &priority);
+			       fscanf(file, "%d:%d:%d\n", &burst, &arrival, &priority);
                    header = insertBack(header , arrival , burst , priority);
 			       counter++;
 		        }
@@ -268,10 +268,12 @@ switch (m)
 
 void fcfsScheduling(){
 
-
+int timer =0;
+double avg , sum ; 
 
 struct process *f = copy (header);
 struct process *t1 =f;
+struct process *t2 =f;
 
 while ( f->next != NULL)
 {
@@ -280,14 +282,29 @@ while ( f->next != NULL)
 
 	}
 	  
-
 	 f=f->next; 
+}
+//finding the avg waiting time 
+while (t1 != NULL)
+{
+
+
+	timer += t1->bt ;
+    t1->tt = timer ;
+	
+
+	t1->wt = (timer - t1->bt) - t1->at  ;
+	sum += t1->wt ;
+	t1=t1->next ;
 }
 
 
 
+avg = sum / counter ;
+printf("average of fcfs : %f" , avg);
 
-display (t1);
+
+//sendout(t2 , avg );
 
 
 
@@ -303,7 +320,72 @@ display (t1);
 void sjfScheduling (){
 
 if (preemptive==0){
-  
+
+
+int timer = 0;
+
+double avg , sum ; 
+
+struct process *f = copy (header);
+struct process *t1 =f;
+struct process *t2 =f;
+
+while ( f->next != NULL)
+{
+	if (f->bt > f->next->bt){
+     swapp (f , f->next);
+
+	}
+	  
+
+	 f=f->next; 
+}
+
+
+while (t1 != NULL){
+
+   if (t1->at <= timer ){
+	 timer += t1->bt ;
+	 t1->tt = timer ;
+	 t1 = t1->next;
+   }else {
+	swapp ( t1 , t1->next);
+   if (t1->at <= timer ){
+      timer += t1->bt ;
+	  t1->tt = timer ;
+	  t1 = t1->next;
+   }else {
+	swapp ( t1 , t1->next);
+   if (t1->at <= timer ){
+      timer += t1->bt ;
+	  t1->tt = timer ;
+	  t1 = t1->next;
+   }
+
+}
+
+}
+}
+
+timer = 0;
+while (t2 != NULL)
+{
+
+
+	timer += t2->bt ;
+    t2->tt = timer ;
+	
+
+	t2->wt = (timer - t2->bt) - t2->at  ;
+	sum += t2->wt ;
+	t2=t2->next ;
+}
+
+avg = sum / counter ;
+
+printf("average of sjf : %f" , avg);
+
+
 
 
 
