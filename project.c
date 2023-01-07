@@ -16,6 +16,9 @@ int bt;  // burst time
 int pr;  //priority
 int tt ; //turnaround time
 int wt ; //waiting time
+bool done ; //to check if its finished
+int parts ; // rr parts 
+int remain; 
 
 struct process* next ;
 
@@ -277,6 +280,8 @@ switch (m)
 
 void fcfsScheduling(){
 
+fcfs =true ;
+
 int timer =0;
 double avg , sum ; 
 
@@ -326,6 +331,8 @@ printf("average of fcfs : %f" , avg);
 //___________________________sjf________________________________
 
 void sjfScheduling (){
+
+sjf = true ;
 
 if (preemptive==0){
 
@@ -418,6 +425,27 @@ printf("\naverage of sjf : %f" , avg);
 
 }else{
 
+int timer = 0;
+
+double avg , sum ; 
+
+struct process *f = copy (header);
+struct process *t =f;
+struct process *tt =f;
+struct process *t11 =f;
+
+while ( f->next != NULL)
+{
+	if (f->at > f->next->at){
+     swapp (f , f->next);
+
+	}
+	  
+
+	 f=f->next; 
+}
+
+
 
 
 
@@ -434,8 +462,8 @@ if (preemptive==0){
   
 
 int timer = 0;
-
-double avg , sum ; 
+int sum = 0 ;
+double avg  ; 
 
 struct process *f = copy (header);
 struct process *t =f;
@@ -533,6 +561,87 @@ void roundrobinScheduling(){
 printf("enter the time quamtum ");
 scanf("%1d" , &quantum);
 
+int timer = 0;
+int sum =0 ;
+double avg = 0 ;
+
+int c = counter ;
+int j ;
+
+struct process *f = copy (header);
+struct process *t =f;
+struct process *t1 =f;
+struct process *t2 =f;
+
+
+while ( f->next != NULL)
+{
+	if (f->at > f->next->at){
+     swapp (f , f->next);
+
+	}
+	  
+
+	 f=f->next; 
+}
+
+while (t1 != NULL)
+	{
+		t1->parts = t1->bt / quantum;
+		t1->remain  = t1->bt % quantum;
+		t1 = t1->next;
+	}
+
+
+while (t != NULL)
+{
+	if (!t->done)
+	{
+       if (t->parts ==0 ){
+           timer += t->remain ;
+		   t->tt = timer ; 
+		   t->wt = t->tt - t->bt - t->at ;
+
+		   if (t->wt < 0) t->wt = 0 ;
+
+		   t->done = true ;
+		
+	   }else 
+	   {
+		   timer += quantum ; 
+		   t->parts -- ;
+		   t->tt = timer ; 
+	   }
+	   
+
+
+
+	}
+
+	t=t->next ;
+}
+
+
+    
+printf ("works \n");
+
+
+timer = 0;
+while (t2!= NULL)
+{
+
+
+	timer += t2->bt ;
+    t2->tt = timer ;
+	
+
+	t2->wt = (timer - t2->bt) - t2->at  ;
+	sum += t2->wt ;
+	t2=t2->next ;
+}
+
+avg = sum / counter ;
+printf(" time: %d  and average : %f", timer , avg);
 
 
 }
@@ -592,3 +701,5 @@ struct process* copy(struct process *h){
   }
 
 }
+
+//_______________________________________________________________________
