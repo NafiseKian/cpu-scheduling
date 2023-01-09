@@ -42,6 +42,7 @@ void show();
 void showOutput(struct process*);
 bool check(struct process *);
 struct process *smallest(struct process *, int );
+struct process *worst(struct process * , int );
 
 //__________________________Variables____________________________
 
@@ -128,7 +129,13 @@ int main (int args , char* argv[]){
 			break;
 
 		case 2 :
-			  preemptive = true;
+		      if (preemptive == false ){
+                preemptive = true;
+				printf("preemptive mode is ON ");
+			  }
+			 
+			  else preemptive = false ;
+			  
 			  menu();
 			break;
 
@@ -378,6 +385,7 @@ int timer = 0;
 double avg , sum ; 
 
 struct process *f = copy (header);
+struct process *ff =f;
 struct process *t =f;
 struct process *tt =f;
 struct process *t11 =f;
@@ -396,11 +404,14 @@ while ( f->next != NULL)
 
 
 
-timer = 0;
+
 
 for (int i=0 ; i<counter ; i++){
 
- for (int j = 0; j < counter - 2 - i; j++){
+	timer = 0;
+     t=ff;
+
+ for (int j = 0; j < counter - 1 - i; j++){
     
 	struct process *t1 =t;
     struct process *t2 =t->next;
@@ -426,8 +437,8 @@ for (int i=0 ; i<counter ; i++){
 }
 
 strcpy(buff, "");
-strcat(buff, "Scheduling Method: Shortest Job First \n");
-strcat(buff, "Process Waiting Times:\n");
+strcat(buff, "Scheduling Method: Shortest Job First(NON Preemptive) \n");
+strcat(buff, "Waiting Times:\n");
 
 timer = 0;
 
@@ -492,7 +503,9 @@ int c = counter ;
 int j ;
 
 struct process *f = copy (header);
+struct process *ff =f;
 struct process *t =f;
+struct process *tt =f;
 struct process *t1 =f;
 struct process *t2 =f;
 struct process *temp =f;
@@ -525,6 +538,42 @@ while (t1 != NULL)
 
 
 
+
+for (int i=0 ; i<counter ; i++){
+
+	tt=ff;
+	timer =0;
+
+ for (int j = 0; j < counter - 1 - i; j++){
+    
+	struct process *t11 =tt;
+    struct process *t12 =tt->next;
+
+
+	 if (t11->at <= timer && t12->at <= timer){
+            if (t11->bt > t12->bt)
+			{
+                swapp(t11 , t11->next);
+				
+			}
+        timer += t11->bt ;
+	}else {
+		timer += t11->bt ;
+		
+	}
+   
+  tt=tt->next;
+ }
+
+
+}
+
+
+
+timer = 0 ;
+
+
+
 while ( ! check(t))
 {
 	struct process *c = smallest(t, timer );
@@ -532,6 +581,7 @@ while ( ! check(t))
 	bool flag = true;
 		if (c == NULL)
 		{
+			
 			temp = t;
 			while (temp != NULL)
 			{
@@ -544,7 +594,6 @@ while ( ! check(t))
 						c = smallest(t, timer);
 						c->parts--;
 						timer++;
-						printf("\n this works");
 						if (c->parts == 0)
 						{
 							c->tt= timer;
@@ -555,6 +604,8 @@ while ( ! check(t))
 
 				temp = temp->next;
 			}
+			
+		    
 		}
 		else
 		{
@@ -566,36 +617,34 @@ while ( ! check(t))
 				c->tt = timer;
 				c->done= true;
 			}
+			 
 		}
    
 	
 }
 
 
-printf("checking");
+
+
+
+strcpy(buff, "");
+strcat(buff, "Scheduling Method: Shortest Job First (Preemptive) \n");
+strcat(buff, "Waiting Times:\n");
 
 
 
 
 
 
-
-
-/*
-
-
-
-
-
-timer = 0;
-
-   timer += t2->bt ;
-    t2->tt = timer ;
 	
 
-	t2->wt = (timer - t2->bt)  ;
+	t2->wt = t2->tt - t->bt ;
+
+	char buff1[20] = "";
+	snprintf(buff1, 19, "waiting time  %d \n", t2->wt);
+	strcat(buff, buff1);
+
 	sum += t2->wt ;
-	printf("\n sum is %f" , sum );
 	t2=t2->next ;
 
 
@@ -605,36 +654,33 @@ timer = 0;
 while (t2 != NULL)
 {
 
-
-	timer += t2->bt ;
-    t2->tt = timer ;
 	
 
-	t2->wt = (timer - t2->bt) - t2->at  ;
+	t2->wt = (t2->tt - t2->bt) - t2->at  ;
+
+	char buff1[20] = "";
+	snprintf(buff1, 19, "waiting time  %d \n", t2->wt);
+	strcat(buff, buff1);
 	sum += t2->wt ;
-	printf("\n sum is %f" , sum );
+	
 	t2=t2->next ;
 }
 
 
-printf("sum of fcfs : %f" , sum);
+
 avg = sum / counter ;
-printf(" time: %d ", timer);
+
+
+char buff2[40];
+snprintf(buff2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
+strcat(buff, buff2);
+strcat(buffer_output, buff);
 
 
 
 
 
 
-
-printf("\naverage of sjf : %f" , avg);
-
-printf("no error at least");
-
-
-
-
-*/
 
 }
 
@@ -657,6 +703,7 @@ double avg  ;
 
 struct process *f = copy (header);
 struct process *t =f;
+struct process *ff =f;
 struct process *tt =f;
 struct process *t11 =f;
 
@@ -678,7 +725,10 @@ timer = 0;
 
 for (int i=0 ; i<counter ; i++){
 
- for (int j = 0; j < counter - 2 - i; j++){
+timer = 0;
+t=ff;
+
+ for (int j = 0; j < counter  - 1 - i; j++){
     
 	struct process *t1 =t;
     struct process *t2 =t->next;
@@ -692,22 +742,23 @@ for (int i=0 ; i<counter ; i++){
 			}
         timer += t1->bt ;
 	}else {
-		timer += t1->bt ;
+	
+		timer = t1->bt ;
 		
 	}
-   
   t=t->next;
  }
-
  
 
 }
 
+
+
 timer = 0;
 
 strcpy(buff, "");
-strcat(buff, "Scheduling Method: Priority \n");
-strcat(buff, "Process Waiting Times:\n");
+strcat(buff, "Scheduling Method: Priority (NON Preemptive)\n");
+strcat(buff, "Waiting Times:\n");
 
 
     timer += t11->bt ;
@@ -753,6 +804,194 @@ strcat(buffer_output, buff);
   
 
 }else{
+
+//____________________________Preemptive_____________________________________
+
+int timer = 0;
+double sum =0 ;
+double avg = 0 ;
+
+int c = counter ;
+int j ;
+
+struct process *f = copy (header);
+struct process *ff =f;
+struct process *t =f;
+struct process *tt =f;
+struct process *t1 =f;
+struct process *t2 =f;
+struct process *temp =f;
+
+
+
+while ( f->next != NULL)
+{
+	if (f->at > f->next->at){
+     swapp (f , f->next);
+
+	}
+	  
+
+	 f=f->next; 
+}
+
+
+
+
+
+while (t1 != NULL)
+	{
+		t1->parts = t1->bt ;
+
+		t1 = t1->next;
+	}
+
+
+
+
+
+
+
+for (int i=0 ; i<counter ; i++){
+
+timer = 0;
+t=ff;
+
+ for (int j = 0; j < counter  - 1 - i; j++){
+    
+	struct process *t1 =t;
+    struct process *t2 =t->next;
+
+
+	 if (t1->at <= timer && t2->at <= timer){
+            if (t1->pr > t2->pr)
+			{
+                swapp(t1 , t1->next);
+
+			}
+        timer += t1->bt ;
+	}else {
+	
+		timer = t1->bt ;
+		
+	}
+  t=t->next;
+ }
+ 
+
+}
+
+
+
+timer = 0 ;
+
+
+
+while ( ! check(t))
+{
+	struct process *c = worst(t, timer );
+
+	bool flag = true;
+		if (c == NULL)
+		{
+			
+			temp = t;
+			while (temp != NULL)
+			{
+				if (!temp->done)
+				{
+					if (temp->at > timer && flag)
+					{
+						flag = false;
+						timer = temp->at;
+						c = worst(t, timer);
+						c->parts--;
+						timer++;
+						if (c->parts == 0)
+						{
+							c->tt= timer;
+							c->done = true;
+						}
+					}
+				}
+
+				temp = temp->next;
+			}
+			
+		    
+		}
+		else
+		{
+			timer++;
+			c->parts--;
+
+			if (c->parts == 0)
+			{
+				c->tt = timer;
+				c->done= true;
+			}
+			 
+		}
+   
+	
+}
+
+
+
+
+
+strcpy(buff, "");
+strcat(buff, "Scheduling Method: Priority (Preemptive) \n");
+strcat(buff, "Waiting Times:\n");
+
+
+
+
+
+
+	
+
+	t2->wt = t2->tt - t->bt ;
+
+	char buff1[20] = "";
+	snprintf(buff1, 19, "waiting time  %d \n", t2->wt);
+	strcat(buff, buff1);
+
+	sum += t2->wt ;
+	t2=t2->next ;
+
+
+
+
+
+while (t2 != NULL)
+{
+
+	
+
+	t2->wt = (t2->tt - t2->bt) - t2->at  ;
+
+	char buff1[20] = "";
+	snprintf(buff1, 19, "waiting time  %d \n", t2->wt);
+	strcat(buff, buff1);
+	sum += t2->wt ;
+	
+	t2=t2->next ;
+}
+
+
+
+avg = sum / counter ;
+
+
+char buff2[40];
+snprintf(buff2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
+strcat(buff, buff2);
+strcat(buffer_output, buff);
+
+
+
+
 
 
 
@@ -910,9 +1149,9 @@ void showOutput(struct process *h){
 		priorityScheduling();
 		roundrobinScheduling();
 
-		//preemptive = 1; 
-		//sjfScheduling();
-		//priorityScheduling();
+		preemptive = 1; 
+		sjfScheduling();
+		priorityScheduling();
 
 	
 	
@@ -921,6 +1160,9 @@ void showOutput(struct process *h){
 	FILE *f = fopen(output, "w");
 	fprintf(f, "%s", buffer_output);
 	fclose(f);
+
+   
+
 
 
 	exit(0);
@@ -978,7 +1220,7 @@ bool check(struct process *h)
           h = h->next;
 		  d = false ;
 
-		}
+		}else h=h->next;
 		
 	}
 
@@ -988,7 +1230,7 @@ bool check(struct process *h)
 //___________________________smallest______________________________
 
 
-	struct process *smallest(struct process *h, int l)
+struct process *smallest(struct process *h, int l)
 {
 	struct process *temp = NULL ;
 	int x = 99999;
@@ -998,7 +1240,7 @@ bool check(struct process *h)
 		{
 			if (h->at <= l)
 			{
-				if (h->parts < x)
+				if (h->parts <= x)
 				{
 					temp = h;
 					x = h->parts;
@@ -1011,7 +1253,32 @@ bool check(struct process *h)
 	return temp;
 }
 
-		
+
+//________________________worst_____________________________________
+
+struct process *worst(struct process *h, int l)
+{
+	struct process *temp = NULL ;
+	int y = 99999;
+	while (h != NULL)
+	{
+		if (!h->done)
+		{
+			if (h->at <= l)
+			{
+				if (h->pr <= y)
+				{
+					temp = h;
+					y = h->pr;
+				}
+			}
+		}
+		h = h->next;
+	}
+
+	return temp;
+}
+
 //_______________________show__________________________________________
 
 void show (){
