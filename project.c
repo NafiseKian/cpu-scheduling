@@ -38,10 +38,17 @@ void fcfsScheduling();
 void sjfScheduling ();
 void priorityScheduling();
 void roundrobinScheduling();
+void show();
 void showOutput(struct process*);
+bool check(struct process *);
+struct process *smallest(struct process *, int );
 
 //__________________________Variables____________________________
 
+
+#define SIZE 999999
+char buff[SIZE];
+char buffer_output[SIZE * 6];
 char* input  ;
 char* output  ;
 int counter = 0;
@@ -126,7 +133,7 @@ int main (int args , char* argv[]){
 			break;
 
 		case 3 :
-		display(header);
+		    show();
 			break;
 
 		case 4 :
@@ -232,7 +239,7 @@ void display(struct process *h)
 
 while (temp != NULL)
 {
-	printf("%d  %d  %d \n" ,temp->at , temp->bt, temp->pr );
+	printf("\n arrival : %d burst:  %d priority : %d \n" ,temp->at , temp->bt, temp->pr );
 	temp=temp->next;
 }
 
@@ -283,7 +290,8 @@ void fcfsScheduling(){
 fcfs =true ;
 
 int timer =0;
-double avg , sum ; 
+double avg ; 
+double sum = 0 ;
 
 struct process *f = copy (header);
 struct process *t1 =f;
@@ -299,6 +307,27 @@ while ( f->next != NULL)
 	 f=f->next; 
 }
 //finding the avg waiting time 
+
+strcpy(buff, "");
+strcat(buff, "Scheduling Method: First Come First Served\n");
+strcat(buff, "Process Waiting Times:\n");
+
+    char buff1[20] = "";
+
+    timer += t1->bt ;
+    t1->tt = timer ;
+	
+
+	t1->wt = (timer - t1->bt)  ;
+	snprintf(buff1, 19, "waiting time  %d \n", t1->wt);
+	strcat(buff, buff1);
+	sum += t1->wt ;
+	t1=t1->next ;
+
+
+
+
+
 while (t1 != NULL)
 {
 
@@ -308,19 +337,26 @@ while (t1 != NULL)
 	
 
 	t1->wt = (timer - t1->bt) - t1->at  ;
+
+    char buff1[20] = "";
+	snprintf(buff1, 19, "waiting time  %d \n", t1->wt);
+	strcat(buff, buff1);
+
+
 	sum += t1->wt ;
+	
 	t1=t1->next ;
 }
 
 
 
 avg = sum / counter ;
-printf("average of fcfs : %f" , avg);
-
-//sendout(t2 , avg );
 
 
-
+char buff2[40];
+snprintf(buff2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
+strcat(buff, buff2);
+strcat(buffer_output, buff);
 
 
 
@@ -364,7 +400,7 @@ timer = 0;
 
 for (int i=0 ; i<counter ; i++){
 
- for (int j = 0; j < counter - 1 - i; j++){
+ for (int j = 0; j < counter - 2 - i; j++){
     
 	struct process *t1 =t;
     struct process *t2 =t->next;
@@ -374,9 +410,7 @@ for (int i=0 ; i<counter ; i++){
             if (t1->bt > t2->bt)
 			{
                 swapp(t1 , t1->next);
-				printf("swapp happend for %d \n" , t1->at);
 				
-
 			}
         timer += t1->bt ;
 	}else {
@@ -384,14 +418,34 @@ for (int i=0 ; i<counter ; i++){
 		
 	}
    
-
+  t=t->next;
  }
 
- t=t->next;
+ 
 
 }
 
+strcpy(buff, "");
+strcat(buff, "Scheduling Method: Shortest Job First \n");
+strcat(buff, "Process Waiting Times:\n");
+
 timer = 0;
+
+   timer += t11->bt ;
+    t11->tt = timer ;
+	
+
+	t11->wt = (timer - t11->bt)  ;
+
+	char buff1[20] = "";
+	snprintf(buff1, 19, "waiting time  %d \n", t11->wt);
+	strcat(buff, buff1);
+
+
+	sum += t11->wt ;
+	t11=t11->next ;
+
+
 while (t11 != NULL)
 {
 
@@ -401,6 +455,10 @@ while (t11 != NULL)
 	
 
 	t11->wt = (timer - t11->bt) - t11->at  ;
+
+	char buff1[20] = "";
+	snprintf(buff1, 19, "waiting time  %d \n", t11->wt);
+	strcat(buff, buff1);
 	sum += t11->wt ;
 	t11=t11->next ;
 }
@@ -408,31 +466,38 @@ while (t11 != NULL)
 
 
 avg = sum / counter ;
-printf(" time: %d ", timer);
 
-
-display(tt);
-
-
-
-
-printf("\naverage of sjf : %f" , avg);
+char buff2[40];
+snprintf(buff2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
+strcat(buff, buff2);
+strcat(buffer_output, buff);
 
 
 
 
+
+
+
+
+//__________________________preemptive mode_________________________________
 
 
 }else{
 
 int timer = 0;
+double sum =0 ;
+double avg = 0 ;
 
-double avg , sum ; 
+int c = counter ;
+int j ;
 
 struct process *f = copy (header);
 struct process *t =f;
-struct process *tt =f;
-struct process *t11 =f;
+struct process *t1 =f;
+struct process *t2 =f;
+struct process *temp =f;
+
+
 
 while ( f->next != NULL)
 {
@@ -449,8 +514,131 @@ while ( f->next != NULL)
 
 
 
+while (t1 != NULL)
+	{
+		t1->parts = t1->bt ;
+
+		t1 = t1->next;
+	}
+
+
+
+
+
+while ( ! check(t))
+{
+	struct process *c = smallest(t, timer );
+
+	bool flag = true;
+		if (c == NULL)
+		{
+			temp = t;
+			while (temp != NULL)
+			{
+				if (!temp->done)
+				{
+					if (temp->at > timer && flag)
+					{
+						flag = false;
+						timer = temp->at;
+						c = smallest(t, timer);
+						c->parts--;
+						timer++;
+						printf("\n this works");
+						if (c->parts == 0)
+						{
+							c->tt= timer;
+							c->done = true;
+						}
+					}
+				}
+
+				temp = temp->next;
+			}
+		}
+		else
+		{
+			timer++;
+			c->parts--;
+
+			if (c->parts == 0)
+			{
+				c->tt = timer;
+				c->done= true;
+			}
+		}
+   
+	
+}
+
+
+printf("checking");
+
+
+
+
+
+
+
+
+/*
+
+
+
+
+
+timer = 0;
+
+   timer += t2->bt ;
+    t2->tt = timer ;
+	
+
+	t2->wt = (timer - t2->bt)  ;
+	sum += t2->wt ;
+	printf("\n sum is %f" , sum );
+	t2=t2->next ;
+
+
+
+
+
+while (t2 != NULL)
+{
+
+
+	timer += t2->bt ;
+    t2->tt = timer ;
+	
+
+	t2->wt = (timer - t2->bt) - t2->at  ;
+	sum += t2->wt ;
+	printf("\n sum is %f" , sum );
+	t2=t2->next ;
+}
+
+
+printf("sum of fcfs : %f" , sum);
+avg = sum / counter ;
+printf(" time: %d ", timer);
+
+
+
+
+
+
+
+printf("\naverage of sjf : %f" , avg);
+
+printf("no error at least");
+
+
+
+
+*/
 
 }
+
+
 
 }
 
@@ -458,11 +646,13 @@ while ( f->next != NULL)
 
 void priorityScheduling(){
 
+	priority = true ;
+
 if (preemptive==0){
   
 
 int timer = 0;
-int sum = 0 ;
+double sum = 0 ;
 double avg  ; 
 
 struct process *f = copy (header);
@@ -488,7 +678,7 @@ timer = 0;
 
 for (int i=0 ; i<counter ; i++){
 
- for (int j = 0; j < counter - 1 - i; j++){
+ for (int j = 0; j < counter - 2 - i; j++){
     
 	struct process *t1 =t;
     struct process *t2 =t->next;
@@ -498,8 +688,6 @@ for (int i=0 ; i<counter ; i++){
             if (t1->pr > t2->pr)
 			{
                 swapp(t1 , t1->next);
-				printf("swapp happend for %d \n" , t1->at);
-				
 
 			}
         timer += t1->bt ;
@@ -508,14 +696,35 @@ for (int i=0 ; i<counter ; i++){
 		
 	}
    
-
+  t=t->next;
  }
 
- t=t->next;
+ 
 
 }
 
 timer = 0;
+
+strcpy(buff, "");
+strcat(buff, "Scheduling Method: Priority \n");
+strcat(buff, "Process Waiting Times:\n");
+
+
+    timer += t11->bt ;
+    t11->tt = timer ;
+	
+
+	t11->wt = (timer - t11->bt)   ;
+
+	char buff1[20] = "";
+	snprintf(buff1, 19, "waiting time  %d \n", t11->wt);
+	strcat(buff, buff1);
+
+
+	sum += t11->wt ;
+	t11=t11->next ;
+
+
 while (t11 != NULL)
 {
 
@@ -525,22 +734,22 @@ while (t11 != NULL)
 	
 
 	t11->wt = (timer - t11->bt) - t11->at  ;
+
+	char buff1[20] = "";
+	snprintf(buff1, 19, "waiting time  %d \n", t11->wt);
+	strcat(buff, buff1);
+
+
 	sum += t11->wt ;
 	t11=t11->next ;
 }
 
 avg = sum / counter ;
-printf(" time: %d ", timer);
 
-
-display(tt);
-
-
-
-
-printf("\naverage of sjf : %f" , avg);
-
-
+char buff2[40];
+snprintf(buff2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
+strcat(buff, buff2);
+strcat(buffer_output, buff);
   
 
 }else{
@@ -558,11 +767,18 @@ printf("\naverage of sjf : %f" , avg);
 
 void roundrobinScheduling(){
 
-printf("enter the time quamtum ");
-scanf("%1d" , &quantum);
+
+roundrobin = true ; 
+
+
+if (quantum == NULL){
+
+	printf("enter the time quamtum ");
+    scanf("%1d" , &quantum);
+}
 
 int timer = 0;
-int sum =0 ;
+double sum =0 ;
 double avg = 0 ;
 
 int c = counter ;
@@ -623,10 +839,28 @@ while (t != NULL)
 
 
     
-printf ("works \n");
+strcpy(buff, "");
+strcat(buff, "Scheduling Method: Round Robin  \n");
+strcat(buff, "Process Waiting Times:\n");
 
 
 timer = 0;
+
+    timer += t2->bt ;
+    t2->tt = timer ;
+	
+
+	t2->wt = (timer - t2->bt) ;
+
+	char buff1[20] = "";
+	snprintf(buff1, 19, "waiting time  %d \n", t2->wt);
+	strcat(buff, buff1);
+
+
+	sum += t2->wt ;
+	t2=t2->next ;
+
+
 while (t2!= NULL)
 {
 
@@ -636,13 +870,22 @@ while (t2!= NULL)
 	
 
 	t2->wt = (timer - t2->bt) - t2->at  ;
+
+	char buff1[20] = "";
+	snprintf(buff1, 19, "waiting time  %d \n", t2->wt);
+	strcat(buff, buff1);
+
+
 	sum += t2->wt ;
 	t2=t2->next ;
 }
 
 avg = sum / counter ;
-printf(" time: %d  and average : %f", timer , avg);
 
+char buff2[40];
+snprintf(buff2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
+strcat(buff, buff2);
+strcat(buffer_output, buff);
 
 }
 
@@ -652,15 +895,35 @@ printf(" time: %d  and average : %f", timer , avg);
 void showOutput(struct process *h){
 
 
+    
 
+  
+	if (quantum == 0){
 
-    FILE *f = fopen(output, "w");
-    fprintf(f , "working ! ");
+		printf("\nenter the time quantum please\n");
+		scanf("%1d" , &quantum);
+	}
+		preemptive = 0 ;
+	
+		fcfsScheduling();
+		sjfScheduling();
+		priorityScheduling();
+		roundrobinScheduling();
+
+		//preemptive = 1; 
+		//sjfScheduling();
+		//priorityScheduling();
+
+	
+	
+
+	printf("%s", buffer_output);
+	FILE *f = fopen(output, "w");
+	fprintf(f, "%s", buffer_output);
 	fclose(f);
 
 
-    exit(0);
-
+	exit(0);
 }
 
 //____________________________swap______________________________
@@ -702,4 +965,70 @@ struct process* copy(struct process *h){
 
 }
 
-//_______________________________________________________________________
+//__________________________check____________________________________
+
+
+
+bool check(struct process *h)
+{
+	bool d = true;
+	while (h!= NULL)
+	{
+		if (!h->done){
+          h = h->next;
+		  d = false ;
+
+		}
+		
+	}
+
+	return d;
+}
+
+//___________________________smallest______________________________
+
+
+	struct process *smallest(struct process *h, int l)
+{
+	struct process *temp = NULL ;
+	int x = 99999;
+	while (h != NULL)
+	{
+		if (!h->done)
+		{
+			if (h->at <= l)
+			{
+				if (h->parts < x)
+				{
+					temp = h;
+					x = h->parts;
+				}
+			}
+		}
+		h = h->next;
+	}
+
+	return temp;
+}
+
+		
+//_______________________show__________________________________________
+
+void show (){
+
+	if (fcfs){
+        
+	}
+
+	if(sjf){
+
+	}
+
+	if(priority){
+
+	}
+
+	if(roundrobin){
+
+	}
+}
