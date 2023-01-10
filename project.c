@@ -29,7 +29,6 @@ struct process* next ;
 void menu();
 struct process *createProcess( int, int, int);
 struct process *insertBack(struct process *, int, int, int);
-struct process *deleteFront(struct process *);
 void swapp (struct process * , struct process *);
 struct process *copy(struct process *);
 void display(struct process *header);
@@ -140,7 +139,7 @@ int main (int args , char* argv[]){
 			break;
 
 		case 3 :
-		    show();
+		    showOutput(header);
 			break;
 
 		case 4 :
@@ -206,37 +205,6 @@ struct process *insertBack(struct process *h, int burst , int arrival, int prior
 	return h;
 }
 
-//_____________________________deleteFront_______________________________
-
-
-struct process *deleteFront(struct process *header)
-{
-	struct process *temp;
-
-	if (header == NULL)
-	{
-		return header;
-	}
-
-	temp = header;
-	header = header->next;
-	free(temp);
-	return header;
-}
-
-//____________________________deleteAfter_______________________________
-
-void deleteAfter(struct process *afternode){
-
-	struct process *t ;
-
-	if(afternode->next == NULL || afternode == NULL)
-	  return;
-
-	t=afternode->next;
-	afternode->next=t->next;
-	free(t);
-}
 
 //___________________________Display____________________________________
 
@@ -319,15 +287,15 @@ strcpy(buff, "");
 strcat(buff, "Scheduling Method: First Come First Served\n");
 strcat(buff, "Process Waiting Times:\n");
 
-    char buff1[20] = "";
+    char b1[20] = "";
 
     timer += t1->bt ;
     t1->tt = timer ;
 	
 
 	t1->wt = (timer - t1->bt)  ;
-	snprintf(buff1, 19, "waiting time  %d \n", t1->wt);
-	strcat(buff, buff1);
+	snprintf(b1, 19, "waiting time  %d \n", t1->wt);
+	strcat(buff, b1);
 	sum += t1->wt ;
 	t1=t1->next ;
 
@@ -345,9 +313,9 @@ while (t1 != NULL)
 
 	t1->wt = (timer - t1->bt) - t1->at  ;
 
-    char buff1[20] = "";
-	snprintf(buff1, 19, "waiting time  %d \n", t1->wt);
-	strcat(buff, buff1);
+    char b1[20] = "";
+	snprintf(b1, 19, "waiting time  %d \n", t1->wt);
+	strcat(buff, b1);
 
 
 	sum += t1->wt ;
@@ -360,9 +328,9 @@ while (t1 != NULL)
 avg = sum / counter ;
 
 
-char buff2[40];
-snprintf(buff2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
-strcat(buff, buff2);
+char b2[40];
+snprintf(b2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
+strcat(buff, b2);
 strcat(buffer_output, buff);
 
 
@@ -448,9 +416,9 @@ timer = 0;
 
 	t11->wt = (timer - t11->bt)  ;
 
-	char buff1[20] = "";
-	snprintf(buff1, 19, "waiting time  %d \n", t11->wt);
-	strcat(buff, buff1);
+	char b1[20] = "";
+	snprintf(b1, 19, "waiting time  %d \n", t11->wt);
+	strcat(buff, b1);
 
 
 	sum += t11->wt ;
@@ -467,9 +435,9 @@ while (t11 != NULL)
 
 	t11->wt = (timer - t11->bt) - t11->at  ;
 
-	char buff1[20] = "";
-	snprintf(buff1, 19, "waiting time  %d \n", t11->wt);
-	strcat(buff, buff1);
+	char b1[20] = "";
+	snprintf(b1, 19, "waiting time  %d \n", t11->wt);
+	strcat(buff, b1);
 	sum += t11->wt ;
 	t11=t11->next ;
 }
@@ -478,9 +446,9 @@ while (t11 != NULL)
 
 avg = sum / counter ;
 
-char buff2[40];
-snprintf(buff2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
-strcat(buff, buff2);
+char b2[40];
+snprintf(b2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
+strcat(buff, b2);
 strcat(buffer_output, buff);
 
 
@@ -639,12 +607,13 @@ strcat(buff, "Waiting Times:\n");
 	
 
 	t2->wt = t2->tt - t->bt ;
+    sum += t2->wt ;
+    if(t2->wt < 0) t2->wt = 0 ;
+	char b1[20] = "";
+	snprintf(b1, 19, "waiting time  %d \n", t2->wt);
+	strcat(buff, b1);
 
-	char buff1[20] = "";
-	snprintf(buff1, 19, "waiting time  %d \n", t2->wt);
-	strcat(buff, buff1);
-
-	sum += t2->wt ;
+	
 	t2=t2->next ;
 
 
@@ -657,11 +626,12 @@ while (t2 != NULL)
 	
 
 	t2->wt = (t2->tt - t2->bt) - t2->at  ;
-
-	char buff1[20] = "";
-	snprintf(buff1, 19, "waiting time  %d \n", t2->wt);
-	strcat(buff, buff1);
-	sum += t2->wt ;
+    sum += t2->wt ;
+    if(t2->wt < 0) t2->wt = 0 ;
+	char b1[20] = "";
+	snprintf(b1, 19, "waiting time  %d \n", t2->wt);
+	strcat(buff, b1);
+	
 	
 	t2=t2->next ;
 }
@@ -671,9 +641,9 @@ while (t2 != NULL)
 avg = sum / counter ;
 
 
-char buff2[40];
-snprintf(buff2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
-strcat(buff, buff2);
+char b2[40];
+snprintf(b2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
+strcat(buff, b2);
 strcat(buffer_output, buff);
 
 
@@ -767,9 +737,9 @@ strcat(buff, "Waiting Times:\n");
 
 	t11->wt = (timer - t11->bt)   ;
 
-	char buff1[20] = "";
-	snprintf(buff1, 19, "waiting time  %d \n", t11->wt);
-	strcat(buff, buff1);
+	char b1[20] = "";
+	snprintf(b1, 19, "waiting time  %d \n", t11->wt);
+	strcat(buff, b1);
 
 
 	sum += t11->wt ;
@@ -786,9 +756,9 @@ while (t11 != NULL)
 
 	t11->wt = (timer - t11->bt) - t11->at  ;
 
-	char buff1[20] = "";
-	snprintf(buff1, 19, "waiting time  %d \n", t11->wt);
-	strcat(buff, buff1);
+	char b1[20] = "";
+	snprintf(b1, 19, "waiting time  %d \n", t11->wt);
+	strcat(buff, b1);
 
 
 	sum += t11->wt ;
@@ -797,9 +767,9 @@ while (t11 != NULL)
 
 avg = sum / counter ;
 
-char buff2[40];
-snprintf(buff2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
-strcat(buff, buff2);
+char b2[40];
+snprintf(b2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
+strcat(buff, b2);
 strcat(buffer_output, buff);
   
 
@@ -952,12 +922,11 @@ strcat(buff, "Waiting Times:\n");
 	
 
 	t2->wt = t2->tt - t->bt ;
-
-	char buff1[20] = "";
-	snprintf(buff1, 19, "waiting time  %d \n", t2->wt);
-	strcat(buff, buff1);
-
-	sum += t2->wt ;
+    sum += t2->wt ;
+    if(t2->wt < 0) t2->wt = 0 ;
+	char b1[20] = "";
+	snprintf(b1, 19, "waiting time  %d \n", t2->wt);
+	strcat(buff, b1);
 	t2=t2->next ;
 
 
@@ -970,11 +939,12 @@ while (t2 != NULL)
 	
 
 	t2->wt = (t2->tt - t2->bt) - t2->at  ;
-
-	char buff1[20] = "";
-	snprintf(buff1, 19, "waiting time  %d \n", t2->wt);
-	strcat(buff, buff1);
-	sum += t2->wt ;
+    sum += t2->wt ;
+	if(t2->wt < 0) t2->wt = 0 ;
+	char b1[20] = "";
+	snprintf(b1, 19, "waiting time  %d \n", t2->wt);
+	strcat(buff, b1);
+	
 	
 	t2=t2->next ;
 }
@@ -984,9 +954,9 @@ while (t2 != NULL)
 avg = sum / counter ;
 
 
-char buff2[40];
-snprintf(buff2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
-strcat(buff, buff2);
+char b2[40];
+snprintf(b2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
+strcat(buff, b2);
 strcat(buffer_output, buff);
 
 
@@ -1054,13 +1024,17 @@ while (t != NULL)
 	{
        if (t->parts ==0 ){
            timer += t->remain ;
-		   t->tt = timer ; 
+		   t->remain = 0 ;
+		
+	   }else if (t->parts ==0  && t->remain == 0)
+	   {
+           t->tt = timer ; 
 		   t->wt = t->tt - t->bt - t->at ;
 
 		   if (t->wt < 0) t->wt = 0 ;
 
 		   t->done = true ;
-		
+
 	   }else 
 	   {
 		   timer += quantum ; 
@@ -1091,9 +1065,9 @@ timer = 0;
 
 	t2->wt = (timer - t2->bt) ;
 
-	char buff1[20] = "";
-	snprintf(buff1, 19, "waiting time  %d \n", t2->wt);
-	strcat(buff, buff1);
+	char b1[20] = "";
+	snprintf(b1, 19, "waiting time  %d \n", t2->wt);
+	strcat(buff, b1);
 
 
 	sum += t2->wt ;
@@ -1110,9 +1084,9 @@ while (t2!= NULL)
 
 	t2->wt = (timer - t2->bt) - t2->at  ;
 
-	char buff1[20] = "";
-	snprintf(buff1, 19, "waiting time  %d \n", t2->wt);
-	strcat(buff, buff1);
+	char b1[20] = "";
+	snprintf(b1, 19, "waiting time  %d \n", t2->wt);
+	strcat(buff, b1);
 
 
 	sum += t2->wt ;
@@ -1121,9 +1095,9 @@ while (t2!= NULL)
 
 avg = sum / counter ;
 
-char buff2[40];
-snprintf(buff2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
-strcat(buff, buff2);
+char b2[40];
+snprintf(b2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
+strcat(buff, b2);
 strcat(buffer_output, buff);
 
 }
@@ -1147,12 +1121,13 @@ void showOutput(struct process *h){
 		fcfsScheduling();
 		sjfScheduling();
 		priorityScheduling();
-		roundrobinScheduling();
+		
 
 		preemptive = 1; 
 		sjfScheduling();
 		priorityScheduling();
-
+        
+		roundrobinScheduling();
 	
 	
 
