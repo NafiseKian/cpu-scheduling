@@ -33,10 +33,10 @@ void swapp (struct process * , struct process *);
 struct process *copy(struct process *);
 void display(struct process *header);
 void schedulingMethod (int );
-void fcfsScheduling();
-void sjfScheduling ();
-void priorityScheduling();
-void roundrobinScheduling();
+void fcfsScheduling(int);
+void sjfScheduling (int);
+void priorityScheduling(int);
+void roundrobinScheduling(int);
 void show();
 void showOutput(struct process*);
 bool check(struct process *);
@@ -133,13 +133,17 @@ int main (int args , char* argv[]){
 				printf("preemptive mode is ON ");
 			  }
 			 
-			  else preemptive = false ;
+			  else{
+				preemptive = false ;
+				printf("preemptive mode is OFF ");
+			  } 
 			  
 			  menu();
 			break;
 
 		case 3 :
-		    showOutput(header);
+		    show(header);
+			menu();
 			break;
 
 		case 4 :
@@ -233,19 +237,19 @@ switch (m)
 	break;
 
 	case 2 :  
-	   fcfsScheduling();
+	   fcfsScheduling(0);
 	break;
 
 	case 3 :
-	   sjfScheduling();  
+	   sjfScheduling(0);  
 	break;
 
 	case 4 :  
-	   priorityScheduling();
+	   priorityScheduling(0);
 	break;
 
 	case 5 :  
-	   roundrobinScheduling();
+	   roundrobinScheduling(0);
 	break;
 
 
@@ -260,9 +264,11 @@ switch (m)
 
 //___________________________fcfs_______________________________________
 
-void fcfsScheduling(){
+void fcfsScheduling(int s){
 
 fcfs =true ;
+
+
 
 int timer =0;
 double avg ; 
@@ -333,15 +339,16 @@ snprintf(b2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
 strcat(buff, b2);
 strcat(buffer_output, buff);
 
-
-
+int sign = s ;
+if(s==1)
+printf("%s" , buff);
 
 
 }
 
 //___________________________sjf________________________________
 
-void sjfScheduling (){
+void sjfScheduling (int s){
 
 sjf = true ;
 
@@ -453,7 +460,9 @@ strcat(buffer_output, buff);
 
 
 
-
+int sign = s ;
+if(s==1)
+printf("%s" , buff);
 
 
 
@@ -647,7 +656,9 @@ strcat(buff, b2);
 strcat(buffer_output, buff);
 
 
-
+int sign = s ;
+if(s==1)
+printf("%s" , buff);
 
 
 
@@ -660,7 +671,7 @@ strcat(buffer_output, buff);
 
 //_________________________priority______________________________
 
-void priorityScheduling(){
+void priorityScheduling(int s){
 
 	priority = true ;
 
@@ -772,6 +783,9 @@ snprintf(b2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
 strcat(buff, b2);
 strcat(buffer_output, buff);
   
+int sign = s ;
+if(s==1)
+printf("%s" , buff);
 
 }else{
 
@@ -963,7 +977,9 @@ strcat(buffer_output, buff);
 
 
 
-
+int sign = s ;
+if(s==1)
+printf("%s" , buff);
 
 
 
@@ -974,7 +990,7 @@ strcat(buffer_output, buff);
 
 //________________________round robin_____________________________
 
-void roundrobinScheduling(){
+void roundrobinScheduling(int s){
 
 
 roundrobin = true ; 
@@ -997,6 +1013,7 @@ struct process *f = copy (header);
 struct process *t =f;
 struct process *t1 =f;
 struct process *t2 =f;
+struct process *temp =NULL;
 
 
 while ( f->next != NULL)
@@ -1016,6 +1033,7 @@ while (t1 != NULL)
 		t1->remain  = t1->bt % quantum;
 		t1 = t1->next;
 	}
+
 
 
 while (t != NULL)
@@ -1049,6 +1067,10 @@ while (t != NULL)
 
 	t=t->next ;
 }
+
+
+
+
 
 
     
@@ -1100,6 +1122,10 @@ snprintf(b2, 39, "Average Waiting Time: %.3f ms\n\n", avg);
 strcat(buff, b2);
 strcat(buffer_output, buff);
 
+int sign = s ;
+if(s==1)
+printf("%s" , buff);
+
 }
 
 
@@ -1118,16 +1144,16 @@ void showOutput(struct process *h){
 	}
 		preemptive = 0 ;
 	
-		fcfsScheduling();
-		sjfScheduling();
-		priorityScheduling();
+		fcfsScheduling(0);
+		sjfScheduling(0);
+		priorityScheduling(0);
 		
 
 		preemptive = 1; 
-		sjfScheduling();
-		priorityScheduling();
+		sjfScheduling(0);
+		priorityScheduling(0);
         
-		roundrobinScheduling();
+		roundrobinScheduling(0);
 	
 	
 
@@ -1254,23 +1280,23 @@ struct process *worst(struct process *h, int l)
 	return temp;
 }
 
-//_______________________show__________________________________________
+//_______________________show on screen_________________________________
 
 void show (){
 
 	if (fcfs){
-        
+        fcfsScheduling(1);
 	}
 
 	if(sjf){
-
+       sjfScheduling(1);
 	}
 
 	if(priority){
-
+       priorityScheduling(1);
 	}
 
 	if(roundrobin){
-
+      roundrobinScheduling(1);
 	}
 }
